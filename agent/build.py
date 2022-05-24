@@ -5,7 +5,7 @@ import config
 import time
 
 # TODO: Error running executable on mac. TODO: check for windows, TODO: add mac version (possible fail might be because it is linux generated file)
-def build_agent(output, platform, serrver):
+def build_agent(output, platform, server):
     prog_name = os.path.basename(output)
     platform = platform.lower()
 

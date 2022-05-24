@@ -26,7 +26,7 @@ from models import Command
 
 
 api = Blueprint('api', __name__)
-GEOIP = pygeoip.GeoIP('api/GeoIP.dat', pygeoip.MEMORY_CACHE)
+GEOIP = pygeoip.GeoIP('API/GeoIP.dat', pygeoip.MEMORY_CACHE)
 
 
 def geolocation(ip):
