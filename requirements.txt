@@ -3,14 +3,14 @@ certifi
 chardet
 click
 EasyProcess
-Flask
+Flask==1.1.2
 Flask-Script
 Flask-SQLAlchemy
 future
 gunicorn
 idna
-itsdangerous
-Jinja2
+itsdangerous==2.0.1
+Jinja2<3.1.0
 macholib
 MarkupSafe
 olefile
@@ -22,10 +22,10 @@ pyscreenshot
 requests
 SQLAlchemy
 urllib3
-Werkzeug
+Werkzeug==2.0.3
 pynput
 opencv-python
-pypiwin32
+#pypiwin32
 
 Flask-Script
 pygeoip

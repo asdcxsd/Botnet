@@ -38,7 +38,7 @@ def require_admin(func):
     return wrapper
 
 
-webui = Blueprint('webui', __name__, static_folder='static', static_url_path='/static/webui', template_folder='templates')
+webui = Blueprint('webui', __name__, static_folder='static', static_url_path='/static/webui', template_folder='Templates')
 
 
 @webui.route('/')

